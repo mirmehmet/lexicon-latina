@@ -1,0 +1,28 @@
+## Visual Studio and MSBuild Build Outputs
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+Generated[Ff]iles/
+
+## Visual Studio Cache, Layouts, and User Data
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Local Application JSON Cache/Database files
+*.json
+!appsettings.json
+
+## Rider / JetBrains IDEs
+.idea/
+
+## VS Code
+.vscode/
+
+## Operating System temporary files
+Thumbs.db
+ehthumbs.db
+Desktop.ini

@@ -1,0 +1,190 @@
+<UserControl x:Class="lexicon_latina.Views.DictionaryPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:lexicon_latina.ViewModels"
+             Background="Transparent">
+
+    <UserControl.DataContext>
+        <vm:MainViewModel />
+    </UserControl.DataContext>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0"
+                     Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                     FontSize="16"
+                     Padding="12,8"
+                     Background="#1a1a2e"
+                     Foreground="White"
+                     CaretBrush="White"
+                     BorderBrush="#e0c97f"
+                     BorderThickness="1"
+                     Margin="0,0,8,0">
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TextBox">
+                                    <Grid>
+                                        <Border x:Name="border" 
+                                                Background="{TemplateBinding Background}" 
+                                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                                CornerRadius="4"/>
+                                        <ScrollViewer x:Name="PART_ContentHost" Focusable="false" 
+                                                      HorizontalScrollBarVisibility="Hidden" 
+                                                      VerticalScrollBarVisibility="Hidden"
+                                                      Padding="{TemplateBinding Padding}"
+                                                      VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="placeholder" 
+                                                   Text="Türkçe kelimeyi girin." 
+                                                   Foreground="#555570" 
+                                                   FontSize="15"
+                                                   IsHitTestVisible="false"
+                                                   Margin="15,0,0,0"
+                                                   VerticalAlignment="Center"
+                                                   Visibility="Collapsed"/>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="Text" Value="">
+                                            <Setter TargetName="placeholder" Property="Visibility" Value="Visible"/>
+                                        </Trigger>
+                                        <Trigger Property="Text" Value="{x:Null}">
+                                            <Setter TargetName="placeholder" Property="Visibility" Value="Visible"/>
+                                        </Trigger>
+                                        <Trigger Property="IsFocused" Value="True">
+                                            <Setter TargetName="placeholder" Property="Visibility" Value="Collapsed"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TextBox.Style>
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
+
+            <Button Grid.Column="1"
+                    Content="🔍 Ara"
+                    Command="{Binding SearchCommand}"
+                    FontSize="14"
+                    Padding="16,8"
+                    Background="#e0c97f"
+                    Foreground="#1a1a2e"
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Cursor="Hand"/>
+        </Grid>
+        
+        <TextBlock Grid.Row="1"
+                   Margin="0,0,0,12"
+                   FontSize="13"
+                   Foreground="#aaaaaa">
+            <Run Text="→ "/>
+            <Run Text="{Binding TranslatedText}" Foreground="#e0c97f"/>
+        </TextBlock>
+        
+        <Border Grid.Row="2"
+                BorderBrush="#2e2e50"
+                BorderThickness="1"
+                CornerRadius="8">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Results}"
+                              Background="Transparent">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="#2a2a4a"
+                                    BorderThickness="0,0,0,1"
+                                    Padding="16,12">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="180"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0"
+                                               Text="{Binding Word}"
+                                               FontSize="15"
+                                               FontWeight="Bold"
+                                               Foreground="#e0c97f"/>
+
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding PartOfSpeech}"
+                                               FontSize="13"
+                                               Foreground="#888888"
+                                               VerticalAlignment="Center"/>
+
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding ShortMeaning}"
+                                               FontSize="13"
+                                               Foreground="#cccccc"
+                                               TextWrapping="Wrap"/>
+                                    
+                                    <Button Grid.Column="3"
+                                            Command="{Binding DataContext.ToggleFavoriteCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            VerticalAlignment="Center"
+                                            Margin="12,0,0,0">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <TextBlock x:Name="StarTxt" Text="☆" FontSize="22" Foreground="#444460" VerticalAlignment="Center"/>
+                                                <ControlTemplate.Triggers>
+                                                    <DataTrigger Binding="{Binding IsFavorited}" Value="True">
+                                                        <Setter TargetName="StarTxt" Property="Text" Value="★"/>
+                                                        <Setter TargetName="StarTxt" Property="Foreground" Value="#e0c97f"/>
+                                                    </DataTrigger>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="StarTxt" Property="Opacity" Value="0.8"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+        
+        <Grid Grid.Row="3" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       Text="{Binding StatusMessage}"
+                       FontSize="12"
+                       Foreground="#888888"
+                       VerticalAlignment="Center"/>
+
+            <ProgressBar Grid.Column="1"
+                         Width="120" Height="6"
+                         IsIndeterminate="True"
+                         Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+                         Foreground="#e0c97f"
+                         Background="#2a2a4a"/>
+        </Grid>
+    </Grid>
+</UserControl>
