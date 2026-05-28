@@ -26,7 +26,12 @@ namespace lexicon_latina.Services
 
         private HistoryService()
         {
-            _filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "history.json");
+            string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LexiconLatina");
+            if (!Directory.Exists(appDataPath))
+            {
+                Directory.CreateDirectory(appDataPath);
+            }
+            _filePath = Path.Combine(appDataPath, "history.json");
             LoadHistory();
         }
 

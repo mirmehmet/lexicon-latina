@@ -20,7 +20,12 @@ namespace lexicon_latina.Services
 
         private FavoritesService()
         {
-            _filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "favorites.json");
+            string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LexiconLatina");
+            if (!Directory.Exists(appDataPath))
+            {
+                Directory.CreateDirectory(appDataPath);
+            }
+            _filePath = Path.Combine(appDataPath, "favorites.json");
             LoadFavorites();
         }
 
