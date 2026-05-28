@@ -1,15 +1,11 @@
-
 using System.Windows.Controls;
 
-namespace lexicon_latina.Views
+namespace lexicon_latina.Views;
+
+public partial class HistoryPage : UserControl
 {
-
-    public partial class HistoryPage : UserControl
+    public HistoryPage()
     {
-
-        public HistoryPage()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

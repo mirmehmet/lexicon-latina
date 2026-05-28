@@ -1,15 +1,11 @@
-
 using System.Windows.Controls;
 
-namespace lexicon_latina.Views
+namespace lexicon_latina.Views;
+
+public partial class DictionaryPage : UserControl
 {
-
-    public partial class DictionaryPage : UserControl
+    public DictionaryPage()
     {
-
-        public DictionaryPage()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

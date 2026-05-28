@@ -1,15 +1,11 @@
-
 using System.Windows.Controls;
 
-namespace lexicon_latina.Views
+namespace lexicon_latina.Views;
+
+public partial class FavoritesPage : UserControl
 {
-
-    public partial class FavoritesPage : UserControl
+    public FavoritesPage()
     {
-
-        public FavoritesPage()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

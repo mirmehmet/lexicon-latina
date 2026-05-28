@@ -1,91 +1,87 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using lexicon_latina.Models;
 
-namespace lexicon_latina.Services
+namespace lexicon_latina.Services;
+
+public class HistoryService
 {
-    public class HistoryService
+    private static readonly HistoryService _instance = new();
+    public static HistoryService Instance => _instance;
+
+    private const int MaxItems = 10;
+    private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+    private readonly string _filePath;
+
+    public ObservableCollection<HistoryEntry> Entries { get; } = new();
+
+    public static event Action<HistoryEntry>? SearchRequested;
+
+    public static void RequestSearch(HistoryEntry entry) =>
+        SearchRequested?.Invoke(entry);
+
+    private HistoryService()
     {
-        private static readonly HistoryService _instance = new();
-        public static HistoryService Instance => _instance;
-
-        private const int MaxItems = 10;
-        private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
-        private readonly string _filePath;
-
-        public ObservableCollection<HistoryEntry> Entries { get; } = new();
-
-        public static event Action<HistoryEntry>? SearchRequested;
-
-        public static void RequestSearch(HistoryEntry entry) =>
-            SearchRequested?.Invoke(entry);
-
-        private HistoryService()
+        string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LexiconLatina");
+        if (!Directory.Exists(appDataPath))
         {
-            string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LexiconLatina");
-            if (!Directory.Exists(appDataPath))
-            {
-                Directory.CreateDirectory(appDataPath);
-            }
-            _filePath = Path.Combine(appDataPath, "history.json");
-            LoadHistory();
+            Directory.CreateDirectory(appDataPath);
         }
+        _filePath = Path.Combine(appDataPath, "history.json");
+        LoadHistory();
+    }
 
-        private void LoadHistory()
+    private void LoadHistory()
+    {
+        try
         {
-            try
+            if (File.Exists(_filePath))
             {
-                if (File.Exists(_filePath))
+                string json = File.ReadAllText(_filePath);
+                var list = JsonSerializer.Deserialize<List<HistoryEntry>>(json);
+                if (list != null)
                 {
-                    string json = File.ReadAllText(_filePath);
-                    var list = JsonSerializer.Deserialize<List<HistoryEntry>>(json);
-                    if (list != null)
+                    foreach (var item in list)
                     {
-                        foreach (var item in list)
-                        {
-                            Entries.Add(item);
-                        }
+                        Entries.Add(item);
                     }
                 }
             }
-            catch (Exception) { }
         }
+        catch (Exception) { }
+    }
 
-        private void SaveHistory()
+    private void SaveHistory()
+    {
+        try
         {
-            try
-            {
-                string json = JsonSerializer.Serialize(Entries.ToList(), _jsonOptions);
-                File.WriteAllText(_filePath, json);
-            }
-            catch (Exception) { }
+            string json = JsonSerializer.Serialize(Entries.ToList(), _jsonOptions);
+            File.WriteAllText(_filePath, json);
         }
+        catch (Exception) { }
+    }
 
-        public void Add(string inputTurkish, string translatedWord)
+    public void Add(string inputTurkish, string translatedWord)
+    {
+        if (string.IsNullOrWhiteSpace(inputTurkish)) return;
+
+        if (Entries.Count > 0 &&
+            Entries[0].InputTurkish.Equals(inputTurkish, StringComparison.OrdinalIgnoreCase))
+            return;
+
+        var entry = new HistoryEntry
         {
-            if (string.IsNullOrWhiteSpace(inputTurkish)) return;
+            InputTurkish   = inputTurkish,
+            TranslatedWord = translatedWord,
+            SearchedAt     = DateTime.Now
+        };
 
-            if (Entries.Count > 0 &&
-                Entries[0].InputTurkish.Equals(inputTurkish, StringComparison.OrdinalIgnoreCase))
-                return;
+        Entries.Insert(0, entry);
 
-            var entry = new HistoryEntry
-            {
-                InputTurkish   = inputTurkish,
-                TranslatedWord = translatedWord,
-                SearchedAt     = DateTime.Now
-            };
+        while (Entries.Count > MaxItems)
+            Entries.RemoveAt(Entries.Count - 1);
 
-            Entries.Insert(0, entry);
-
-            while (Entries.Count > MaxItems)
-                Entries.RemoveAt(Entries.Count - 1);
-
-            SaveHistory();
-        }
+        SaveHistory();
     }
 }

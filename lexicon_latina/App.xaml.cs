@@ -1,9 +1,7 @@
 using System.Windows;
 
-namespace lexicon_latina
-{
+namespace lexicon_latina;
 
-    public partial class App : Application
-    {
-    }
+public partial class App : Application
+{
 }
