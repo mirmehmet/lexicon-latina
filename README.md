@@ -55,3 +55,6 @@ git clone https://github.com/mirmehmet/lexicon-latina.git
 cd lexicon-latina
 dotnet run
 ```
+---
+
+*Made with curiosity by [Mir](https://github.com/mirmehmet)*
