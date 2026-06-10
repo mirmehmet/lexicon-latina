@@ -23,15 +23,15 @@
             </Grid.ColumnDefinitions>
 
             <TextBox Grid.Column="0"
-                     Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
-                     FontSize="16"
-                     Padding="12,8"
-                     Background="#1a1a2e"
-                     Foreground="White"
-                     CaretBrush="White"
-                     BorderBrush="#e0c97f"
-                     BorderThickness="1"
-                     Margin="0,0,8,0">
+                      Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                      FontSize="16"
+                      Padding="12,8"
+                      Background="#1a1a2e"
+                      Foreground="White"
+                      CaretBrush="White"
+                      BorderBrush="#e0c97f"
+                      BorderThickness="1"
+                      Margin="0,0,8,0">
                 <TextBox.Style>
                     <Style TargetType="TextBox">
                         <Setter Property="Template">
@@ -138,6 +138,25 @@
                                                    TextWrapping="Wrap"/>
                                         
                                         <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
+                                            <Button Command="{Binding DataContext.PlayTtsCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    Cursor="Hand"
+                                                    Margin="0,0,12,0"
+                                                    ToolTip="Sesli Telaffuz">
+                                                <Button.Template>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <TextBlock x:Name="PlayTxt" Text="🔊" FontSize="16" Foreground="#444460" VerticalAlignment="Center"/>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="PlayTxt" Property="Foreground" Value="#e0c97f"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                            </Button>
+
                                             <Button Command="{Binding DataContext.CopyCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                     CommandParameter="{Binding}"
                                                     Background="Transparent"

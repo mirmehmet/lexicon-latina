@@ -54,6 +54,10 @@ public class MainViewModel : INotifyPropertyChanged
 
     public ICommand CopyCommand { get; }
 
+    public ICommand PlayTtsCommand { get; }
+
+    private readonly System.Windows.Media.MediaPlayer _mediaPlayer = new();
+
     public MainViewModel()
     {
         _translationService = new TranslationService();
@@ -64,6 +68,22 @@ public class MainViewModel : INotifyPropertyChanged
         ToggleFavoriteCommand = new RelayCommand(ToggleFavorite);
 
         CopyCommand = new RelayCommand(CopyWord);
+
+        PlayTtsCommand = new RelayCommand(PlayTts);
+    }
+
+    private void PlayTts(object? parameter)
+    {
+        if (parameter is LatinEntry entry && !string.IsNullOrEmpty(entry.Word))
+        {
+            try
+            {
+                string url = $"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=la&q={Uri.EscapeDataString(entry.Word)}";
+                _mediaPlayer.Open(new Uri(url));
+                _mediaPlayer.Play();
+            }
+            catch { }
+        }
     }
 
     private void CopyWord(object? parameter)
