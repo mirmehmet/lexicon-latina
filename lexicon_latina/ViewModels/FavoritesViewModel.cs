@@ -11,6 +11,7 @@ namespace lexicon_latina.ViewModels;
 public class FavoritesViewModel : INotifyPropertyChanged
 {
     private readonly FavoritesService _favoritesService = FavoritesService.Instance;
+    private readonly TatoebaSentenceService _tatoebaService = new();
 
     public ObservableCollection<LatinEntry> Favorites => _favoritesService.Entries;
 
@@ -21,6 +22,7 @@ public class FavoritesViewModel : INotifyPropertyChanged
     public ICommand RemoveFavoriteCommand { get; }
     public ICommand CopyCommand { get; }
     public ICommand PlayTtsCommand { get; }
+    public ICommand ShowSentencesCommand { get; }
 
     private readonly System.Windows.Media.MediaPlayer _mediaPlayer = new();
 
@@ -29,6 +31,7 @@ public class FavoritesViewModel : INotifyPropertyChanged
         RemoveFavoriteCommand = new RelayCommand(RemoveFavorite);
         CopyCommand = new RelayCommand(CopyWord);
         PlayTtsCommand = new RelayCommand(PlayTts);
+        ShowSentencesCommand = new RelayCommand(async parameter => await ShowSentencesAsync(parameter));
 
         Favorites.CollectionChanged += (s, e) =>
         {
@@ -60,15 +63,71 @@ public class FavoritesViewModel : INotifyPropertyChanged
 
     private void PlayTts(object? parameter)
     {
-        if (parameter is LatinEntry entry && !string.IsNullOrEmpty(entry.Word))
+        string? textToSpeak = null;
+        if (parameter is LatinEntry entry)
+        {
+            textToSpeak = entry.Word;
+        }
+        else if (parameter is string text)
+        {
+            textToSpeak = text;
+        }
+
+        if (!string.IsNullOrEmpty(textToSpeak))
         {
             try
             {
-                string url = $"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=la&q={Uri.EscapeDataString(entry.Word)}";
+                string url = $"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=la&q={Uri.EscapeDataString(textToSpeak)}";
                 _mediaPlayer.Open(new Uri(url));
                 _mediaPlayer.Play();
             }
             catch { }
+        }
+    }
+
+    private async Task ShowSentencesAsync(object? parameter)
+    {
+        if (parameter is LatinEntry entry)
+        {
+            if (entry.IsExpanded)
+            {
+                entry.IsExpanded = false;
+                return;
+            }
+
+            entry.IsExpanded = true;
+
+            if (entry.Sentences.Count == 0 && !entry.IsLoadingSentences)
+            {
+                entry.IsLoadingSentences = true;
+                entry.SentencesStatusMessage = "Cümleler yükleniyor...";
+                entry.Sentences.Clear();
+
+                try
+                {
+                    var sentences = await _tatoebaService.GetSentencesAsync(entry.Word);
+                    if (sentences != null && sentences.Count > 0)
+                    {
+                        entry.SentencesStatusMessage = string.Empty;
+                        foreach (var sentence in sentences)
+                        {
+                            entry.Sentences.Add(sentence);
+                        }
+                    }
+                    else
+                    {
+                        entry.SentencesStatusMessage = "Bu kelimeyi içeren örnek cümle bulunamadı.";
+                    }
+                }
+                catch (Exception)
+                {
+                    entry.SentencesStatusMessage = "Cümleler yüklenirken bir hata oluştu.";
+                }
+                finally
+                {
+                    entry.IsLoadingSentences = false;
+                }
+            }
         }
     }
 

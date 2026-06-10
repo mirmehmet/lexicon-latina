@@ -13,6 +13,7 @@ public class MainViewModel : INotifyPropertyChanged
 {
     private readonly TranslationService    _translationService;
     private readonly GoogleTranslateDictionaryService  _dictionaryService;
+    private readonly TatoebaSentenceService            _tatoebaService;
 
     private string _inputText = string.Empty;
 
@@ -56,12 +57,15 @@ public class MainViewModel : INotifyPropertyChanged
 
     public ICommand PlayTtsCommand { get; }
 
+    public ICommand ShowSentencesCommand { get; }
+
     private readonly System.Windows.Media.MediaPlayer _mediaPlayer = new();
 
     public MainViewModel()
     {
         _translationService = new TranslationService();
         _dictionaryService     = new GoogleTranslateDictionaryService();
+        _tatoebaService        = new TatoebaSentenceService();
 
         SearchCommand = new RelayCommand(async _ => await SearchAsync());
 
@@ -70,15 +74,27 @@ public class MainViewModel : INotifyPropertyChanged
         CopyCommand = new RelayCommand(CopyWord);
 
         PlayTtsCommand = new RelayCommand(PlayTts);
+
+        ShowSentencesCommand = new RelayCommand(async parameter => await ShowSentencesAsync(parameter));
     }
 
     private void PlayTts(object? parameter)
     {
-        if (parameter is LatinEntry entry && !string.IsNullOrEmpty(entry.Word))
+        string? textToSpeak = null;
+        if (parameter is LatinEntry entry)
+        {
+            textToSpeak = entry.Word;
+        }
+        else if (parameter is string text)
+        {
+            textToSpeak = text;
+        }
+
+        if (!string.IsNullOrEmpty(textToSpeak))
         {
             try
             {
-                string url = $"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=la&q={Uri.EscapeDataString(entry.Word)}";
+                string url = $"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=la&q={Uri.EscapeDataString(textToSpeak)}";
                 _mediaPlayer.Open(new Uri(url));
                 _mediaPlayer.Play();
             }
@@ -95,6 +111,52 @@ public class MainViewModel : INotifyPropertyChanged
                 System.Windows.Clipboard.SetText(entry.Word);
             }
             catch { }
+        }
+    }
+
+    private async Task ShowSentencesAsync(object? parameter)
+    {
+        if (parameter is LatinEntry entry)
+        {
+            if (entry.IsExpanded)
+            {
+                entry.IsExpanded = false;
+                return;
+            }
+
+            entry.IsExpanded = true;
+
+            if (entry.Sentences.Count == 0 && !entry.IsLoadingSentences)
+            {
+                entry.IsLoadingSentences = true;
+                entry.SentencesStatusMessage = "Cümleler yükleniyor...";
+                entry.Sentences.Clear();
+
+                try
+                {
+                    var sentences = await _tatoebaService.GetSentencesAsync(entry.Word);
+                    if (sentences != null && sentences.Count > 0)
+                    {
+                        entry.SentencesStatusMessage = string.Empty;
+                        foreach (var sentence in sentences)
+                        {
+                            entry.Sentences.Add(sentence);
+                        }
+                    }
+                    else
+                    {
+                        entry.SentencesStatusMessage = "Bu kelimeyi içeren örnek cümle bulunamadı.";
+                    }
+                }
+                catch (Exception)
+                {
+                    entry.SentencesStatusMessage = "Cümleler yüklenirken bir hata oluştu.";
+                }
+                finally
+                {
+                    entry.IsLoadingSentences = false;
+                }
+            }
         }
     }
 
