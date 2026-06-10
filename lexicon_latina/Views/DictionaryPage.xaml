@@ -102,89 +102,115 @@
                 BorderBrush="#2e2e50"
                 BorderThickness="1"
                 CornerRadius="8">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding Results}"
-                              Background="Transparent">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderBrush="#2a2a4a"
-                                    BorderThickness="0,0,0,1"
-                                    Padding="16,12">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="180"/>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
+            <Grid>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Results}"
+                                  Background="Transparent">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="#2a2a4a"
+                                        BorderThickness="0,0,0,1"
+                                        Padding="16,12">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Column="0"
-                                               Text="{Binding Word}"
-                                               FontSize="15"
-                                               FontWeight="Bold"
-                                               Foreground="#e0c97f"/>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{Binding Word}"
+                                                   FontSize="15"
+                                                   FontWeight="Bold"
+                                                   Foreground="#e0c97f"/>
 
-                                    <TextBlock Grid.Column="1"
-                                               Text="{Binding PartOfSpeech}"
-                                               FontSize="13"
-                                               Foreground="#888888"
-                                               VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding PartOfSpeech}"
+                                                   FontSize="13"
+                                                   Foreground="#888888"
+                                                   VerticalAlignment="Center"/>
 
-                                    <TextBlock Grid.Column="2"
-                                               Text="{Binding ShortMeaning}"
-                                               FontSize="13"
-                                               Foreground="#cccccc"
-                                               TextWrapping="Wrap"/>
-                                    
-                                    <Button Grid.Column="3"
-                                            Command="{Binding DataContext.ToggleFavoriteCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                            CommandParameter="{Binding}"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Cursor="Hand"
-                                            VerticalAlignment="Center"
-                                            Margin="12,0,0,0">
-                                        <Button.Template>
-                                            <ControlTemplate TargetType="Button">
-                                                <TextBlock x:Name="StarTxt" Text="☆" FontSize="22" Foreground="#444460" VerticalAlignment="Center"/>
-                                                <ControlTemplate.Triggers>
-                                                    <DataTrigger Binding="{Binding IsFavorited}" Value="True">
-                                                        <Setter TargetName="StarTxt" Property="Text" Value="★"/>
-                                                        <Setter TargetName="StarTxt" Property="Foreground" Value="#e0c97f"/>
-                                                    </DataTrigger>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="StarTxt" Property="Opacity" Value="0.8"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Button.Template>
-                                    </Button>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding ShortMeaning}"
+                                                   FontSize="13"
+                                                   Foreground="#cccccc"
+                                                   TextWrapping="Wrap"/>
+                                        
+                                        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
+                                            <Button Command="{Binding DataContext.CopyCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    Cursor="Hand"
+                                                    Margin="0,0,12,0"
+                                                    ToolTip="Kelimeyi Panoya Kopyala">
+                                                <Button.Template>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <TextBlock x:Name="CopyTxt" Text="📋" FontSize="16" Foreground="#444460" VerticalAlignment="Center"/>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="CopyTxt" Property="Foreground" Value="#e0c97f"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                            </Button>
+
+                                            <Button Command="{Binding DataContext.ToggleFavoriteCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    Cursor="Hand"
+                                                    ToolTip="Favorilere Ekle/Kaldır">
+                                                <Button.Template>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <TextBlock x:Name="StarTxt" Text="☆" FontSize="22" Foreground="#444460" VerticalAlignment="Center"/>
+                                                        <ControlTemplate.Triggers>
+                                                            <DataTrigger Binding="{Binding IsFavorited}" Value="True">
+                                                                <Setter TargetName="StarTxt" Property="Text" Value="★"/>
+                                                                <Setter TargetName="StarTxt" Property="Foreground" Value="#e0c97f"/>
+                                                            </DataTrigger>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="StarTxt" Property="Opacity" Value="0.8"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <Border Background="#e8141428"
+                        Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+                        CornerRadius="8">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <ProgressBar Width="200" Height="4"
+                                     IsIndeterminate="True"
+                                     Foreground="#e0c97f"
+                                     Background="#2a2a4a"
+                                     BorderThickness="0"/>
+                        <TextBlock Text="Latince çeviriler aranıyor..."
+                                   FontSize="13"
+                                   Foreground="#e0c97f"
+                                   Margin="0,16,0,0"
+                                   HorizontalAlignment="Center"
+                                   FontWeight="Medium"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Border>
         
         <Grid Grid.Row="3" Margin="0,12,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <TextBlock Grid.Column="0"
-                       Text="{Binding StatusMessage}"
+            <TextBlock Text="{Binding StatusMessage}"
                        FontSize="12"
                        Foreground="#888888"
                        VerticalAlignment="Center"/>
-
-            <ProgressBar Grid.Column="1"
-                         Width="120" Height="6"
-                         IsIndeterminate="True"
-                         Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
-                         Foreground="#e0c97f"
-                         Background="#2a2a4a"/>
         </Grid>
     </Grid>
 </UserControl>

@@ -19,10 +19,12 @@ public class FavoritesViewModel : INotifyPropertyChanged
     public bool HasFavorites => Favorites.Count > 0;
 
     public ICommand RemoveFavoriteCommand { get; }
+    public ICommand CopyCommand { get; }
 
     public FavoritesViewModel()
     {
         RemoveFavoriteCommand = new RelayCommand(RemoveFavorite);
+        CopyCommand = new RelayCommand(CopyWord);
 
         Favorites.CollectionChanged += (s, e) =>
         {
@@ -37,6 +39,18 @@ public class FavoritesViewModel : INotifyPropertyChanged
         {
             _favoritesService.Remove(entry.Word);
             entry.IsFavorited = false;
+        }
+    }
+
+    private void CopyWord(object? parameter)
+    {
+        if (parameter is LatinEntry entry && !string.IsNullOrEmpty(entry.Word))
+        {
+            try
+            {
+                System.Windows.Clipboard.SetText(entry.Word);
+            }
+            catch { }
         }
     }
 

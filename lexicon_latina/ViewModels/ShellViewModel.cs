@@ -54,8 +54,22 @@ public class ShellViewModel : INotifyPropertyChanged
         GoToFavoritesCommand  = new RelayCommand(_ => CurrentScreen = AppScreen.Favorites);
         GoToHistoryCommand    = new RelayCommand(_ => CurrentScreen = AppScreen.History);
         GoHomeCommand         = new RelayCommand(_ => CurrentScreen = AppScreen.Home);
+    }
 
-        Services.HistoryService.SearchRequested += _ => CurrentScreen = AppScreen.Dictionary;
+    public void SubscribeEvents()
+    {
+        UnsubscribeEvents();
+        Services.HistoryService.SearchRequested += OnSearchRequested;
+    }
+
+    public void UnsubscribeEvents()
+    {
+        Services.HistoryService.SearchRequested -= OnSearchRequested;
+    }
+
+    private void OnSearchRequested(Models.HistoryEntry entry)
+    {
+        CurrentScreen = AppScreen.Dictionary;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

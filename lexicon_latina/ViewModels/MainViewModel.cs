@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -11,7 +12,7 @@ namespace lexicon_latina.ViewModels;
 public class MainViewModel : INotifyPropertyChanged
 {
     private readonly TranslationService    _translationService;
-    private readonly LatinIsSimpleService  _logeionService;
+    private readonly GoogleTranslateDictionaryService  _dictionaryService;
 
     private string _inputText = string.Empty;
 
@@ -51,30 +52,62 @@ public class MainViewModel : INotifyPropertyChanged
 
     public ICommand ToggleFavoriteCommand { get; }
 
+    public ICommand CopyCommand { get; }
+
     public MainViewModel()
     {
         _translationService = new TranslationService();
-        _logeionService     = new LatinIsSimpleService();
+        _dictionaryService     = new GoogleTranslateDictionaryService();
 
         SearchCommand = new RelayCommand(async _ => await SearchAsync());
 
         ToggleFavoriteCommand = new RelayCommand(ToggleFavorite);
 
-        FavoritesService.Instance.Entries.CollectionChanged += (s, e) =>
-        {
-            foreach (var entry in Results)
-            {
-                entry.IsFavorited = FavoritesService.Instance.IsFavorited(entry.Word);
-            }
-        };
+        CopyCommand = new RelayCommand(CopyWord);
+    }
 
-        HistoryService.SearchRequested += async entry =>
-            await SearchFromHistoryAsync(entry);
+    private void CopyWord(object? parameter)
+    {
+        if (parameter is LatinEntry entry && !string.IsNullOrEmpty(entry.Word))
+        {
+            try
+            {
+                System.Windows.Clipboard.SetText(entry.Word);
+            }
+            catch { }
+        }
+    }
+
+    public void SubscribeEvents()
+    {
+        UnsubscribeEvents();
+        FavoritesService.Instance.Entries.CollectionChanged += OnFavoritesChanged;
+        HistoryService.SearchRequested += OnSearchRequested;
+    }
+
+    public void UnsubscribeEvents()
+    {
+        FavoritesService.Instance.Entries.CollectionChanged -= OnFavoritesChanged;
+        HistoryService.SearchRequested -= OnSearchRequested;
+    }
+
+    private void OnFavoritesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        foreach (var entry in Results)
+        {
+            entry.IsFavorited = FavoritesService.Instance.IsFavorited(entry.Word);
+        }
+    }
+
+    private async void OnSearchRequested(HistoryEntry entry)
+    {
+        await SearchFromHistoryAsync(entry);
     }
 
     private async Task SearchAsync()
     {
-        if (string.IsNullOrWhiteSpace(InputText)) return;
+        string text = (InputText ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(text)) return;
 
         IsLoading      = true;
         StatusMessage  = string.Empty;
@@ -84,11 +117,11 @@ public class MainViewModel : INotifyPropertyChanged
         try
         {
             StatusMessage = "Çevriliyor...";
-            var english   = await _translationService.TranslateAsync(InputText);
+            var english   = await _translationService.TranslateAsync(text);
             TranslatedText = english;
 
             StatusMessage = "Latince aranıyor...";
-            var results   = await _logeionService.SearchAsync(english);
+            var results   = await _dictionaryService.SearchAsync(english);
 
             if (results.Count > 0)
             {
@@ -98,9 +131,9 @@ public class MainViewModel : INotifyPropertyChanged
                     Results.Add(entry);
                 }
 
-                HistoryService.Instance.Add(InputText, english);
+                HistoryService.Instance.Add(text, english);
 
-                StatusMessage = $"{results.Count} sonuç bulundu (Latin is Simple)";
+                StatusMessage = $"{results.Count} sonuç bulundu";
             }
             else
             {
@@ -129,8 +162,7 @@ public class MainViewModel : INotifyPropertyChanged
         try
         {
             StatusMessage = "Latince aranıyor...";
-
-            var results = await _logeionService.SearchAsync(entry.TranslatedWord);
+            var results = await _dictionaryService.SearchAsync(entry.TranslatedWord);
 
             if (results.Count > 0)
             {
@@ -139,7 +171,7 @@ public class MainViewModel : INotifyPropertyChanged
                     r.IsFavorited = FavoritesService.Instance.IsFavorited(r.Word);
                     Results.Add(r);
                 }
-                StatusMessage = $"{results.Count} sonuç bulundu (Latin is Simple)";
+                StatusMessage = $"{results.Count} sonuç bulundu";
             }
             else
             {

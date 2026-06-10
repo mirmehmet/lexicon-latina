@@ -1,4 +1,5 @@
 using System.Windows;
+using lexicon_latina.ViewModels;
 
 namespace lexicon_latina.Views;
 
@@ -8,6 +9,22 @@ public partial class ShellWindow : Window
     {
         InitializeComponent();
         this.StateChanged += ShellWindow_StateChanged;
+
+        this.Loaded += (s, e) =>
+        {
+            if (DataContext is ShellViewModel vm)
+            {
+                vm.SubscribeEvents();
+            }
+        };
+
+        this.Unloaded += (s, e) =>
+        {
+            if (DataContext is ShellViewModel vm)
+            {
+                vm.UnsubscribeEvents();
+            }
+        };
     }
 
     private void ShellWindow_StateChanged(object? sender, EventArgs e)
