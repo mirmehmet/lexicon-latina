@@ -39,6 +39,12 @@ Türkçe kelimelerden Latince karşılıklarını bulan Windows masaüstü sözl
 
 ---
 
+## Veri Saklama
+
+Arama geçmişi ve favorileriniz yerel olarak bilgisayarınızda şu dizine kaydedilir:
+`C:\Users\<Kullanıcı_Adı>\AppData\Local\LexiconLatina` (veya `%LocalAppData%\LexiconLatina`)
+
+---
 ## Teknoloji
 
 - .NET 10.0 / WPF
