@@ -13,16 +13,45 @@ public class FavoritesViewModel : INotifyPropertyChanged
     private readonly FavoritesService _favoritesService = FavoritesService.Instance;
     private readonly TatoebaSentenceService _tatoebaService = new();
 
+    private bool _showWordsTab = true;
+    public bool ShowWordsTab
+    {
+        get => _showWordsTab;
+        set
+        {
+            if (_showWordsTab != value)
+            {
+                _showWordsTab = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowSentencesTab));
+            }
+        }
+    }
+
+    public bool ShowSentencesTab => !ShowWordsTab;
+
     public ObservableCollection<LatinEntry> Favorites => _favoritesService.Entries;
 
     public bool NoFavorites => Favorites.Count == 0;
 
     public bool HasFavorites => Favorites.Count > 0;
 
+    public ObservableCollection<TatoebaSentence> FavoriteSentences => _favoritesService.Sentences;
+
+    public bool NoFavoriteSentences => FavoriteSentences.Count == 0;
+
+    public bool HasFavoriteSentences => FavoriteSentences.Count > 0;
+
     public ICommand RemoveFavoriteCommand { get; }
     public ICommand CopyCommand { get; }
     public ICommand PlayTtsCommand { get; }
     public ICommand ShowSentencesCommand { get; }
+
+    public ICommand ShowWordsTabCommand { get; }
+    public ICommand ShowSentencesTabCommand { get; }
+    public ICommand RemoveFavoriteSentenceCommand { get; }
+    public ICommand ToggleSentenceFavoriteCommand { get; }
+    public ICommand CopySentenceCommand { get; }
 
     private readonly System.Windows.Media.MediaPlayer _mediaPlayer = new();
 
@@ -33,10 +62,31 @@ public class FavoritesViewModel : INotifyPropertyChanged
         PlayTtsCommand = new RelayCommand(PlayTts);
         ShowSentencesCommand = new RelayCommand(async parameter => await ShowSentencesAsync(parameter));
 
+        ShowWordsTabCommand = new RelayCommand(_ => ShowWordsTab = true);
+        ShowSentencesTabCommand = new RelayCommand(_ => ShowWordsTab = false);
+        RemoveFavoriteSentenceCommand = new RelayCommand(RemoveFavoriteSentence);
+        ToggleSentenceFavoriteCommand = new RelayCommand(ToggleSentenceFavorite);
+        CopySentenceCommand = new RelayCommand(CopySentence);
+
         Favorites.CollectionChanged += (s, e) =>
         {
             OnPropertyChanged(nameof(NoFavorites));
             OnPropertyChanged(nameof(HasFavorites));
+        };
+
+        FavoriteSentences.CollectionChanged += (s, e) =>
+        {
+            OnPropertyChanged(nameof(NoFavoriteSentences));
+            OnPropertyChanged(nameof(HasFavoriteSentences));
+
+            // Sync IsFavorited for sentences inside favorite words
+            foreach (var entry in Favorites)
+            {
+                foreach (var sentence in entry.Sentences)
+                {
+                    sentence.IsFavorited = _favoritesService.IsSentenceFavorited(sentence.LatinText);
+                }
+            }
         };
     }
 
@@ -111,6 +161,7 @@ public class FavoritesViewModel : INotifyPropertyChanged
                         entry.SentencesStatusMessage = string.Empty;
                         foreach (var sentence in sentences)
                         {
+                            sentence.IsFavorited = _favoritesService.IsSentenceFavorited(sentence.LatinText);
                             entry.Sentences.Add(sentence);
                         }
                     }
@@ -128,6 +179,44 @@ public class FavoritesViewModel : INotifyPropertyChanged
                     entry.IsLoadingSentences = false;
                 }
             }
+        }
+    }
+
+    private void RemoveFavoriteSentence(object? parameter)
+    {
+        if (parameter is TatoebaSentence sentence)
+        {
+            _favoritesService.RemoveSentence(sentence.LatinText);
+            sentence.IsFavorited = false;
+        }
+    }
+
+    private void ToggleSentenceFavorite(object? parameter)
+    {
+        if (parameter is TatoebaSentence sentence)
+        {
+            if (_favoritesService.IsSentenceFavorited(sentence.LatinText))
+            {
+                _favoritesService.RemoveSentence(sentence.LatinText);
+                sentence.IsFavorited = false;
+            }
+            else
+            {
+                _favoritesService.AddSentence(sentence);
+                sentence.IsFavorited = true;
+            }
+        }
+    }
+
+    private void CopySentence(object? parameter)
+    {
+        if (parameter is TatoebaSentence sentence && !string.IsNullOrEmpty(sentence.LatinText))
+        {
+            try
+            {
+                System.Windows.Clipboard.SetText(sentence.LatinText);
+            }
+            catch { }
         }
     }
 

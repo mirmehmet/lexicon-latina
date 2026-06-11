@@ -53,6 +53,8 @@ public class MainViewModel : INotifyPropertyChanged
 
     public ICommand ToggleFavoriteCommand { get; }
 
+    public ICommand ToggleSentenceFavoriteCommand { get; }
+
     public ICommand CopyCommand { get; }
 
     public ICommand PlayTtsCommand { get; }
@@ -70,6 +72,8 @@ public class MainViewModel : INotifyPropertyChanged
         SearchCommand = new RelayCommand(async _ => await SearchAsync());
 
         ToggleFavoriteCommand = new RelayCommand(ToggleFavorite);
+
+        ToggleSentenceFavoriteCommand = new RelayCommand(ToggleSentenceFavorite);
 
         CopyCommand = new RelayCommand(CopyWord);
 
@@ -140,6 +144,7 @@ public class MainViewModel : INotifyPropertyChanged
                         entry.SentencesStatusMessage = string.Empty;
                         foreach (var sentence in sentences)
                         {
+                            sentence.IsFavorited = FavoritesService.Instance.IsSentenceFavorited(sentence.LatinText);
                             entry.Sentences.Add(sentence);
                         }
                     }
@@ -164,12 +169,14 @@ public class MainViewModel : INotifyPropertyChanged
     {
         UnsubscribeEvents();
         FavoritesService.Instance.Entries.CollectionChanged += OnFavoritesChanged;
+        FavoritesService.Instance.Sentences.CollectionChanged += OnFavoriteSentencesChanged;
         HistoryService.SearchRequested += OnSearchRequested;
     }
 
     public void UnsubscribeEvents()
     {
         FavoritesService.Instance.Entries.CollectionChanged -= OnFavoritesChanged;
+        FavoritesService.Instance.Sentences.CollectionChanged -= OnFavoriteSentencesChanged;
         HistoryService.SearchRequested -= OnSearchRequested;
     }
 
@@ -178,6 +185,17 @@ public class MainViewModel : INotifyPropertyChanged
         foreach (var entry in Results)
         {
             entry.IsFavorited = FavoritesService.Instance.IsFavorited(entry.Word);
+        }
+    }
+
+    private void OnFavoriteSentencesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        foreach (var entry in Results)
+        {
+            foreach (var sentence in entry.Sentences)
+            {
+                sentence.IsFavorited = FavoritesService.Instance.IsSentenceFavorited(sentence.LatinText);
+            }
         }
     }
 
@@ -283,6 +301,23 @@ public class MainViewModel : INotifyPropertyChanged
             {
                 FavoritesService.Instance.Add(entry);
                 entry.IsFavorited = true;
+            }
+        }
+    }
+
+    private void ToggleSentenceFavorite(object? parameter)
+    {
+        if (parameter is TatoebaSentence sentence)
+        {
+            if (FavoritesService.Instance.IsSentenceFavorited(sentence.LatinText))
+            {
+                FavoritesService.Instance.RemoveSentence(sentence.LatinText);
+                sentence.IsFavorited = false;
+            }
+            else
+            {
+                FavoritesService.Instance.AddSentence(sentence);
+                sentence.IsFavorited = true;
             }
         }
     }

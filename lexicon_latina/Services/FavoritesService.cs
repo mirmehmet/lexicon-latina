@@ -12,8 +12,10 @@ public class FavoritesService
 
     private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
     private readonly string _filePath;
+    private readonly string _sentencesFilePath;
 
     public ObservableCollection<LatinEntry> Entries { get; } = new();
+    public ObservableCollection<TatoebaSentence> Sentences { get; } = new();
 
     private FavoritesService()
     {
@@ -23,7 +25,9 @@ public class FavoritesService
             Directory.CreateDirectory(appDataPath);
         }
         _filePath = Path.Combine(appDataPath, "favorites.json");
+        _sentencesFilePath = Path.Combine(appDataPath, "favorite_sentences.json");
         LoadFavorites();
+        LoadSentences();
     }
 
     private void LoadFavorites()
@@ -53,6 +57,37 @@ public class FavoritesService
         {
             string json = JsonSerializer.Serialize(Entries.ToList(), _jsonOptions);
             File.WriteAllText(_filePath, json);
+        }
+        catch (Exception) { }
+    }
+
+    private void LoadSentences()
+    {
+        try
+        {
+            if (File.Exists(_sentencesFilePath))
+            {
+                string json = File.ReadAllText(_sentencesFilePath);
+                var list = JsonSerializer.Deserialize<List<TatoebaSentence>>(json);
+                if (list != null)
+                {
+                    foreach (var item in list)
+                    {
+                        item.IsFavorited = true;
+                        Sentences.Add(item);
+                    }
+                }
+            }
+        }
+        catch (Exception) { }
+    }
+
+    private void SaveSentences()
+    {
+        try
+        {
+            string json = JsonSerializer.Serialize(Sentences.ToList(), _jsonOptions);
+            File.WriteAllText(_sentencesFilePath, json);
         }
         catch (Exception) { }
     }
@@ -89,6 +124,39 @@ public class FavoritesService
         {
             Entries.Remove(existing);
             SaveFavorites();
+        }
+    }
+
+    public bool IsSentenceFavorited(string latinText)
+    {
+        if (string.IsNullOrWhiteSpace(latinText)) return false;
+        return Sentences.Any(s => s.LatinText.Equals(latinText, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public void AddSentence(TatoebaSentence sentence)
+    {
+        if (sentence == null || string.IsNullOrWhiteSpace(sentence.LatinText)) return;
+        if (IsSentenceFavorited(sentence.LatinText)) return;
+
+        var newSentence = new TatoebaSentence
+        {
+            LatinText = sentence.LatinText,
+            TranslationText = sentence.TranslationText,
+            IsFavorited = true
+        };
+
+        Sentences.Add(newSentence);
+        SaveSentences();
+    }
+
+    public void RemoveSentence(string latinText)
+    {
+        if (string.IsNullOrWhiteSpace(latinText)) return;
+        var existing = Sentences.FirstOrDefault(s => s.LatinText.Equals(latinText, StringComparison.OrdinalIgnoreCase));
+        if (existing != null)
+        {
+            Sentences.Remove(existing);
+            SaveSentences();
         }
     }
 }
