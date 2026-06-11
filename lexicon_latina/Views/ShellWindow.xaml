@@ -23,7 +23,7 @@
     </Window.DataContext>
 
     <Window.Resources>
-        
+
         <Style x:Key="TitleBarButton" TargetType="Button">
             <Setter Property="Width" Value="46"/>
             <Setter Property="Height" Value="40"/>
@@ -100,7 +100,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <Style x:Key="BackButton" TargetType="Button">
             <Setter Property="Cursor"          Value="Hand"/>
             <Setter Property="Background"      Value="Transparent"/>
@@ -127,7 +127,7 @@
             </Setter>
         </Style>
     </Window.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -164,10 +164,10 @@
         </Grid>
 
         <Grid Grid.Row="1">
-            
+
             <Grid Visibility="{Binding IsHome, Converter={StaticResource BoolToVisibilityConverter}}">
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    
+
                     <TextBlock Text="LEXICON LATINA"
                                FontSize="32" FontWeight="Bold"
                                Foreground="#e0c97f"
@@ -177,54 +177,60 @@
                                Foreground="#555570"
                                HorizontalAlignment="Center"
                                Margin="0,6,0,48"/>
-                    
+
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        
+
                         <Button Style="{StaticResource TabCard}"
                                 Command="{Binding GoToDictionaryCommand}">
                             <StackPanel>
-                                <TextBlock Text="📖" FontSize="48" HorizontalAlignment="Center"/>
+                                <TextBlock Text="📖" FontSize="48" HorizontalAlignment="Center"
+                                           Foreground="#555570"/>
                                 <TextBlock Text="Sözlük"
-                                           FontSize="16" FontWeight="SemiBold"
+                                           FontSize="17" FontWeight="SemiBold"
                                            Foreground="#e0c97f"
                                            HorizontalAlignment="Center"
                                            Margin="0,12,0,0"/>
-                                <TextBlock Text="Latince ara"
-                                           FontSize="11"
+                                <TextBlock Text="Kelime ara"
+                                           FontSize="13"
                                            Foreground="#555570"
                                            HorizontalAlignment="Center"
                                            Margin="0,5,0,0"/>
                             </StackPanel>
                         </Button>
-                        
+
                         <Button Style="{StaticResource TabCard}"
                                 Command="{Binding GoToFavoritesCommand}">
                             <StackPanel>
-                                <TextBlock Text="⭐" FontSize="67" HorizontalAlignment="Center"/>
+                                <TextBlock Text="🌟" FontSize="48" 
+                                           HorizontalAlignment="Center"
+                                           Foreground="Goldenrod"/>
                                 <TextBlock Text="Favoriler"
-                                           FontSize="16" FontWeight="SemiBold"
+                                           FontSize="17" FontWeight="SemiBold"
                                            Foreground="#e0c97f"
                                            HorizontalAlignment="Center"
                                            Margin="0,12,0,0"/>
-                                <TextBlock Text="Kaydedilen kelimeler"
-                                           FontSize="11"
+                                <TextBlock Text="Kaydedilen kelimeler&#x0a;ve cümleler"
+                                           FontSize="13"
                                            Foreground="#555570"
                                            HorizontalAlignment="Center"
+                                           TextAlignment="Center"
                                            Margin="0,5,0,0"/>
                             </StackPanel>
                         </Button>
-                        
+
                         <Button Style="{StaticResource TabCard}"
                                 Command="{Binding GoToHistoryCommand}">
                             <StackPanel>
-                                <TextBlock Text="🕐" FontSize="48" HorizontalAlignment="Center"/>
+                                <TextBlock Text="🕐" FontSize="48" 
+                                           HorizontalAlignment="Center"
+                                           Foreground="Gray"/>
                                 <TextBlock Text="Geçmiş"
-                                           FontSize="16" FontWeight="SemiBold"
+                                           FontSize="17" FontWeight="SemiBold"
                                            Foreground="#e0c97f"
                                            HorizontalAlignment="Center"
                                            Margin="0,12,0,0"/>
                                 <TextBlock Text="Son aramalar"
-                                           FontSize="11"
+                                           FontSize="13"
                                            Foreground="#555570"
                                            HorizontalAlignment="Center"
                                            Margin="0,5,0,0"/>
@@ -234,13 +240,13 @@
                     </StackPanel>
                 </StackPanel>
             </Grid>
-            
+
             <Grid Visibility="{Binding IsDictionary, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                
+
                 <Grid Grid.Row="0" Background="#0f0f1a" Margin="20,16,20,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -258,7 +264,7 @@
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"/>
                 </Grid>
-                
+
                 <Border Grid.Row="1" Margin="20,12,20,20"
                         Background="#141428"
                         BorderBrush="#2e2e50"
@@ -267,13 +273,13 @@
                     <views:DictionaryPage/>
                 </Border>
             </Grid>
-            
+
             <Grid Visibility="{Binding IsFavorites, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                
+
                 <Grid Grid.Row="0" Background="#0f0f1a" Margin="20,16,20,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -291,7 +297,7 @@
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"/>
                 </Grid>
-                
+
                 <Border Grid.Row="1" Margin="20,12,20,20"
                         Background="#141428"
                         BorderBrush="#2e2e50"
@@ -300,13 +306,13 @@
                     <views:FavoritesPage/>
                 </Border>
             </Grid>
-            
+
             <Grid Visibility="{Binding IsHistory, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                
+
                 <Grid Grid.Row="0" Background="#0f0f1a" Margin="20,16,20,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -324,7 +330,7 @@
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"/>
                 </Grid>
-                
+
                 <Border Grid.Row="1" Margin="20,12,20,20"
                         Background="#141428"
                         BorderBrush="#2e2e50"

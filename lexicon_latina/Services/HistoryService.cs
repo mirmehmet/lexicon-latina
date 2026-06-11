@@ -10,7 +10,7 @@ public class HistoryService
     private static readonly HistoryService _instance = new();
     public static HistoryService Instance => _instance;
 
-    private const int MaxItems = 10;
+    private const int MaxItems = 50;
     private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
     private readonly string _filePath;
 

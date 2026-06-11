@@ -133,7 +133,7 @@ public class MainViewModel : INotifyPropertyChanged
             if (entry.Sentences.Count == 0 && !entry.IsLoadingSentences)
             {
                 entry.IsLoadingSentences = true;
-                entry.SentencesStatusMessage = "Cümleler yükleniyor...";
+                entry.SentencesStatusMessage = "Cümleler aranıyor...";
                 entry.Sentences.Clear();
 
                 try
@@ -220,7 +220,7 @@ public class MainViewModel : INotifyPropertyChanged
             var english   = await _translationService.TranslateAsync(text);
             TranslatedText = english;
 
-            StatusMessage = "Latince aranıyor...";
+            StatusMessage = "Yükleniyor...";
             var results   = await _dictionaryService.SearchAsync(english);
 
             if (results.Count > 0)
@@ -261,7 +261,7 @@ public class MainViewModel : INotifyPropertyChanged
 
         try
         {
-            StatusMessage = "Latince aranıyor...";
+            StatusMessage = "Yükleniyor...";
             var results = await _dictionaryService.SearchAsync(entry.TranslatedWord);
 
             if (results.Count > 0)

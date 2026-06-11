@@ -25,7 +25,7 @@
                        Foreground="#e0c97f"
                        VerticalAlignment="Center"/>
             <TextBlock Grid.Column="1"
-                       Text="Son 10 arama"
+                       Text="Son 50 arama"
                        FontSize="11"
                        Foreground="#444460"
                        VerticalAlignment="Center"/>

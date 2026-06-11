@@ -252,7 +252,7 @@
                                             <StackPanel>
                                                 <!-- Header -->
                                                 <Grid Margin="0,0,0,10">
-                                                    <TextBlock Text="📖 Örnek Cümleler" 
+                                                    <TextBlock Text="📖 Örnek Cümleler"
                                                                FontSize="13" 
                                                                FontWeight="Bold" 
                                                                Foreground="#e0c97f" 
@@ -264,7 +264,7 @@
                                                             Margin="0,12"
                                                             HorizontalAlignment="Center">
                                                     <ProgressBar Width="120" Height="2" IsIndeterminate="True" Foreground="#e0c97f" Background="#1a1a2e" BorderThickness="0"/>
-                                                    <TextBlock Text="Tatoeba'dan örnek cümleler yükleniyor..." 
+                                                    <TextBlock Text="Yükleniyor..." 
                                                                Foreground="#8888aa" 
                                                                FontSize="12" 
                                                                Margin="0,8,0,0" 
@@ -387,7 +387,7 @@
                                      Foreground="#e0c97f"
                                      Background="#2a2a4a"
                                      BorderThickness="0"/>
-                        <TextBlock Text="Latince çeviriler aranıyor..."
+                        <TextBlock Text="Yükleniyor..."
                                    FontSize="13"
                                    Foreground="#e0c97f"
                                    Margin="0,16,0,0"

@@ -261,7 +261,7 @@
                                                             Margin="0,12"
                                                             HorizontalAlignment="Center">
                                                     <ProgressBar Width="120" Height="2" IsIndeterminate="True" Foreground="#e0c97f" Background="#1a1a2e" BorderThickness="0"/>
-                                                    <TextBlock Text="Tatoeba'dan örnek cümleler yükleniyor..." 
+                                                    <TextBlock Text="Yükleniyor..." 
                                                                Foreground="#8888aa" 
                                                                FontSize="12" 
                                                                Margin="0,8,0,0" 
