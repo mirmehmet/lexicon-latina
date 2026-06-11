@@ -19,19 +19,23 @@ Türkçe kelimelerden Latince karşılıklarını bulan Windows masaüstü sözl
 ## Nasıl Çalışır?
 
 1. Kullanıcı Türkçe bir kelime girer.
-2. Uygulama, kelimeyi Google Translate üzerinden İngilizceye çevirir.
-3. Çevrilen kelime Latin is Simple API'sine gönderilir ve eşleşen Latince kelimeler, türleri (isim, fiil, sıfat, deyim) ve anlamlarıyla birlikte listelenir.
-4. Sonuçlar favorilere eklenebilir. Tüm favoriler ve arama geçmişi yerel olarak saklanır.
+2. Uygulama, kelimeyi Google Translate API'si üzerinden İngilizceye çevirir.
+3. Çevrilen İngilizce kelime Google Translate Sözlük (Single/GTX) API'sine gönderilir ve eşleşen Latince kelimeler, türleri (isim, fiil, sıfat, zarf, bağlaç, edat, deyim) ve anlamlarıyla birlikte listelenir.
+4. Kullanıcı, kelime kartlarını genişleterek Tatoeba API'si üzerinden ilgili Latince örnek cümleleri ve çevirilerini (öncelikle Türkçe, yoksa İngilizce) yükleyebilir.
+5. Sonuçlar, örnek cümleler ve arama geçmişi yerel olarak saklanır. Kelimeler ve cümleler ayrı ayrı favorilere eklenebilir.
 
 ---
 
 ## Özellikler
 
 - Türkçe → İngilizce → Latince çift aşamalı akıllı arama
-- Kelime türü ve kısa anlam bilgisiyle detaylı sonuçlar
-- Favoriler (kalıcı, `.json` formatında yerel kayıt)
-- Son 10 aramayı gösteren arama geçmişi
-- Koyu tema, özelleştirilmiş pencere çerçevesi
+- Kelime türü (isim, fiil, sıfat, zarf, bağlaç, edat, deyim) ve kısa anlam bilgisiyle detaylı sonuçlar
+- Latince kelimeler için Tatoeba API destekli örnek cümleler (öncelikli Türkçe veya İngilizce çevirileriyle)
+- Google Translate TTS entegrasyonu ile kelimeler ve örnek cümleler için sesli telaffuz (okunuşu dinleme)
+- Kelimeleri veya örnek cümleleri panoya hızlıca kopyalama
+- Ayrı sekmelerde yönetilebilen Kelime ve Cümle Favorileri (kalıcı, `.json` formatında yerel kayıt)
+- Son 50 aramayı kaydeden ve hızlıca tekrar aramayı sağlayan arama geçmişi
+- Koyu tema ve özelleştirilmiş modern pencere tasarımı
 
 ---
 
@@ -39,8 +43,8 @@ Türkçe kelimelerden Latince karşılıklarını bulan Windows masaüstü sözl
 
 - .NET 10.0 / WPF
 - MVVM mimarisi
-- Google Translate (kayıtsız, ücretsiz endpoint)
-- [Latin is Simple API](https://www.latin-is-simple.com/)
+- Google Translate Single/GTX & TTS API'leri (kayıtsız, ücretsiz endpoint)
+- [Tatoeba API](https://tatoeba.org/) (örnek cümleler için)
 
 ---
 
